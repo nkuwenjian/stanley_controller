@@ -34,10 +34,11 @@
 #include "stanley_controller/common/cubic_spline_interpolation.h"
 
 #include <chrono>  // NOLINT
+#include <cmath>
 
 #include "glog/logging.h"
 
-#include "stanley_controller/third_party/spline/spline.h"
+#include "stanley_controller/common/cubic_spline.h"
 
 namespace stanley_controller {
 
@@ -56,8 +57,8 @@ void CubicSplineInterpolation::Interpolate(const std::vector<double>& knot_x,
   CreateTimeGrid(&T, &tmin, &tmax, knot_x, knot_y);
 
   // define a spline for each coordinate x, y
-  tk::spline sx;
-  tk::spline sy;
+  CubicSpline sx;
+  CubicSpline sy;
   sx.set_points(T, knot_x);
   sy.set_points(T, knot_y);
 
