@@ -58,14 +58,14 @@ int main(int argc, char* argv[]) {
   CHECK_EQ(spline_x.size(), spline_yaw.size());
   LOG(INFO) << "size of cubic spline: " << spline_x.size();
 
-  std::string file = "../data/spline.txt";
+  std::string file = "../data/spline.csv";
   std::ofstream fout;
   fout.open(file);
   if (!fout.is_open()) {
     LOG(ERROR) << "Failed to open " << file;
     return 1;
   }
-  for (size_t i = 0; i < spline_x.size(); ++i) {
+  for (std::size_t i = 0; i < spline_x.size(); ++i) {
     fout << std::fixed << spline_x[i] << "," << spline_y[i] << ","
          << spline_yaw[i] << "\n";
   }

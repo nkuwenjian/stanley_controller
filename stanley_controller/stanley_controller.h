@@ -40,6 +40,11 @@
 
 namespace stanley_controller {
 
+/*
+ * C++ implementation of path tracking simulation with Stanley steering control
+ * and PID speed control. The reference Python implementation can be cound in
+ * https://github.com/AtsushiSakai/PythonRobotics/blob/master/PathTracking/stanley_controller/stanley_controller.py.
+ */
 class StanleyController {
  public:
   StanleyController() = delete;
@@ -47,7 +52,8 @@ class StanleyController {
   static void CalcTargetIndex(const State& state,
                               const std::vector<double>& ref_x,
                               const std::vector<double>& ref_y,
-                              size_t* target_idx, double* error_front_axle);
+                              std::size_t* target_idx,
+                              double* error_front_axle);
 
   static double PidControl(const double current_speed,
                            const double target_speed) {
@@ -59,8 +65,8 @@ class StanleyController {
                              const std::vector<double>& ref_x,
                              const std::vector<double>& ref_y,
                              const std::vector<double>& ref_yaw,
-                             size_t last_target_idx, double* steer,
-                             size_t* current_target_idx);
+                             std::size_t last_target_idx, double* steer,
+                             std::size_t* current_target_idx);
 };
 
 }  // namespace stanley_controller

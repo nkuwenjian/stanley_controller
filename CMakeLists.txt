@@ -25,17 +25,8 @@ find_package(GTest REQUIRED)
 
 include_directories(${PROJECT_SOURCE_DIR})
 
-add_library(band_matrix stanley_controller/common/band_matrix.cc)
-target_link_libraries(band_matrix glog::glog)
-
-add_library(cubic_spline stanley_controller/common/cubic_spline.cc)
-target_link_libraries(cubic_spline band_matrix glog::glog)
-
-add_executable(cubic_spline_test stanley_controller/common/cubic_spline_test.cc)
-target_link_libraries(cubic_spline_test cubic_spline GTest::gtest_main)
-
 add_library(cubic_spline_interpolation stanley_controller/common/cubic_spline_interpolation.cc)
-target_link_libraries(cubic_spline_interpolation cubic_spline glog::glog)
+target_link_libraries(cubic_spline_interpolation glog::glog)
 
 add_executable(cubic_spline_interpolation_test stanley_controller/common/cubic_spline_interpolation_test.cc)
 target_link_libraries(cubic_spline_interpolation_test cubic_spline_interpolation)
@@ -46,4 +37,5 @@ target_link_libraries(stanley_controller glog::glog)
 add_executable(stanley_controller_test stanley_controller/stanley_controller_test.cc)
 target_link_libraries(stanley_controller_test stanley_controller cubic_spline_interpolation)
 
-gtest_discover_tests(cubic_spline_test)
+add_executable(spline_test stanley_controller/common/spline_test.cc)
+target_link_libraries(spline_test glog::glog)

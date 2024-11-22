@@ -41,23 +41,23 @@ namespace stanley_controller {
 void StanleyController::CalcTargetIndex(const State& state,
                                         const std::vector<double>& ref_x,
                                         const std::vector<double>& ref_y,
-                                        size_t* target_idx,
+                                        std::size_t* target_idx,
                                         double* error_front_axle) {
   CHECK_NOTNULL(target_idx);
   CHECK_EQ(ref_x.size(), ref_y.size());
   CHECK(!ref_x.empty());
 
   // Calc front axle position
-  const double front_x = state.x() + kWheelBase * cos(state.yaw());
-  const double front_y = state.y() + kWheelBase * sin(state.yaw());
+  const double front_x = state.x() + kWheelBase * std::cos(state.yaw());
+  const double front_y = state.y() + kWheelBase * std::sin(state.yaw());
 
   // Search nearest point index
   *target_idx = 0;
   double min_dist = std::numeric_limits<double>::max();
-  for (size_t i = 0; i < ref_x.size(); ++i) {
+  for (std::size_t i = 0; i < ref_x.size(); ++i) {
     const double dx = front_x - ref_x[i];
     const double dy = front_y - ref_y[i];
-    const double dxy = hypot(dx, dy);
+    const double dxy = std::hypot(dx, dy);
     if (dxy < min_dist) {
       min_dist = dxy;
       *target_idx = i;
@@ -65,8 +65,8 @@ void StanleyController::CalcTargetIndex(const State& state,
   }
 
   // Project RMS error onto front axle vector
-  const double front_axle_vec_x = -cos(state.yaw() + M_PI / 2.0);
-  const double front_axle_vec_y = -sin(state.yaw() + M_PI / 2.0);
+  const double front_axle_vec_x = -std::cos(state.yaw() + M_PI / 2.0);
+  const double front_axle_vec_y = -std::sin(state.yaw() + M_PI / 2.0);
   if (error_front_axle != nullptr) {
     *error_front_axle = (front_x - ref_x[*target_idx]) * front_axle_vec_x +
                         (front_y - ref_y[*target_idx]) * front_axle_vec_y;
@@ -77,8 +77,9 @@ void StanleyController::StanleyControl(const State& state,
                                        const std::vector<double>& ref_x,
                                        const std::vector<double>& ref_y,
                                        const std::vector<double>& ref_yaw,
-                                       size_t last_target_idx, double* steer,
-                                       size_t* current_target_idx) {
+                                       std::size_t last_target_idx,
+                                       double* steer,
+                                       std::size_t* current_target_idx) {
   double error_front_axle;
   CalcTargetIndex(state, ref_x, ref_y, current_target_idx, &error_front_axle);
   *current_target_idx = std::max(last_target_idx, *current_target_idx);
@@ -89,7 +90,7 @@ void StanleyController::StanleyControl(const State& state,
   // theta_d corrects the cross track error
   constexpr double kStanleyControllerGain = 0.5;
   const double theta_d =
-      atan2(kStanleyControllerGain * error_front_axle, state.v());
+      std::atan2(kStanleyControllerGain * error_front_axle, state.v());
   // Steering control
   *steer = Clamp(theta_e + theta_d, -kMaxSteer, kMaxSteer);
 }

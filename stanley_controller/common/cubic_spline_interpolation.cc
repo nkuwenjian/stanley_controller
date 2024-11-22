@@ -38,7 +38,7 @@
 
 #include "glog/logging.h"
 
-#include "stanley_controller/common/cubic_spline.h"
+#include "stanley_controller/common/spline.h"
 
 namespace stanley_controller {
 
@@ -57,10 +57,8 @@ void CubicSplineInterpolation::Interpolate(const std::vector<double>& knot_x,
   CreateTimeGrid(&T, &tmin, &tmax, knot_x, knot_y);
 
   // define a spline for each coordinate x, y
-  CubicSpline sx;
-  CubicSpline sy;
-  sx.set_points(T, knot_x);
-  sy.set_points(T, knot_y);
+  CubicSpline sx(T, knot_x);
+  CubicSpline sy(T, knot_y);
 
   // evaluates spline and outputs data to be used with gnuplot
   const double kInterpolationResolution = 0.1;
@@ -75,7 +73,7 @@ void CubicSplineInterpolation::Interpolate(const std::vector<double>& knot_x,
     spline_y->at(i) = sy(t);
     const double deriv_x = sx.deriv(1, t);
     const double deriv_y = sy.deriv(1, t);
-    spline_yaw->at(i) = atan2(deriv_y, deriv_x);
+    spline_yaw->at(i) = std::atan2(deriv_y, deriv_x);
   }
 
   const auto end_timestamp = std::chrono::system_clock::now();
@@ -95,9 +93,9 @@ void CubicSplineInterpolation::CreateTimeGrid(std::vector<double>* T,
   // coordinates as a function of time: (X(t), Y(t))
   T->resize(X.size());
   T->front() = 0.0;
-  for (size_t i = 1; i < T->size(); i++) {
+  for (std::size_t i = 1; i < T->size(); i++) {
     // time is proportional to the distance, i.e. we go at a const speed
-    T->at(i) = T->at(i - 1) + hypot(X[i] - X[i - 1], Y[i] - Y[i - 1]);
+    T->at(i) = T->at(i - 1) + std::hypot(X[i] - X[i - 1], Y[i] - Y[i - 1]);
   }
 
   *tmin = T->front();

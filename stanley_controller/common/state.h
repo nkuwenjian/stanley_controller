@@ -55,9 +55,9 @@ class State {
     CHECK_GE(steer, -kMaxSteer);
     CHECK_LE(steer, kMaxSteer);
 
-    x_ += v_ * kControlPeriod * cos(yaw_);
-    y_ += v_ * kControlPeriod * sin(yaw_);
-    yaw_ += v_ * kControlPeriod / kWheelBase * tan(steer);
+    x_ += v_ * kControlPeriod * std::cos(yaw_);
+    y_ += v_ * kControlPeriod * std::sin(yaw_);
+    yaw_ += v_ * kControlPeriod / kWheelBase * std::tan(steer);
     yaw_ = NormalizeAngle(yaw_);
     v_ += acc * kControlPeriod;
   }

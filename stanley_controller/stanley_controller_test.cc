@@ -66,8 +66,8 @@ int main(int argc, char* argv[]) {
 
   // Initial state
   State state(0.0, 5.0, M_PI / 9.0, 0.0);
-  const size_t last_idx = spline_x.size() - 1;
-  size_t target_idx = 0;
+  const std::size_t last_idx = spline_x.size() - 1;
+  std::size_t target_idx = 0;
   StanleyController::CalcTargetIndex(state, spline_x, spline_y, &target_idx,
                                      nullptr);
   const double max_simulation_time = 100.0;
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
   while (max_simulation_time >= time && last_idx > target_idx) {
     double acc = StanleyController::PidControl(state.v(), target_speed);
     double steer = 0.0;
-    size_t current_target_idx = 0;
+    std::size_t current_target_idx = 0;
     StanleyController::StanleyControl(state, spline_x, spline_y, spline_yaw,
                                       target_idx, &steer, &current_target_idx);
     state.Update(acc, steer);
@@ -95,27 +95,27 @@ int main(int argc, char* argv[]) {
   CHECK_GE(last_idx, target_idx) << "Cannot reach goal";
 
   // Log spline data for debug
-  std::string file = "../data/spline.txt";
+  std::string file = "../data/spline.csv";
   std::ofstream fout;
   fout.open(file);
   if (!fout.is_open()) {
     LOG(ERROR) << "Failed to open " << file;
     return 1;
   }
-  for (size_t i = 0; i < spline_x.size(); ++i) {
+  for (std::size_t i = 0; i < spline_x.size(); ++i) {
     fout << std::fixed << spline_x[i] << "," << spline_y[i] << ","
          << spline_yaw[i] << "\n";
   }
   fout.close();
 
   // Log tracking result for debug
-  file = "../data/track.txt";
+  file = "../data/track.csv";
   fout.open(file);
   if (!fout.is_open()) {
     LOG(ERROR) << "Failed to open " << file;
     return 1;
   }
-  for (size_t i = 0; i < result_x.size(); ++i) {
+  for (std::size_t i = 0; i < result_x.size(); ++i) {
     fout << std::fixed << t[i] << "," << result_x[i] << "," << result_y[i]
          << "," << result_v[i] << "\n";
   }

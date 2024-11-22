@@ -31,36 +31,40 @@
  * Author: Jian Wen (nkuwenjian@gmail.com)
  *****************************************************************************/
 
-#pragma once
+#include "stanley_controller/common/spline.h"
 
+#include <iostream>
 #include <vector>
 
-namespace stanley_controller {
+int main() {
+  {
+    // Some points (t,y) on a curve y = f(t)
+    std::vector<double> t = {0.0, 1.0, 2.0, 3.0, 4.0, 5.0};
+    std::vector<double> y = {1.0, 2.0, 3.0, 2.0, 1.0, 2.0};
 
-// band matrix solver
-class band_matrix {
- private:
-  std::vector<std::vector<double>> m_upper;  // upper band
-  std::vector<std::vector<double>> m_lower;  // lower band
- public:
-  band_matrix() = delete;                  // constructor
-  band_matrix(int dim, int n_u, int n_l);  // constructor
-  virtual ~band_matrix() = default;        // destructor
-  void resize(int dim, int n_u, int n_l);  // init with dim,n_u,n_l
-  int dim() const;                         // matrix dimension
-  int num_upper() const { return static_cast<int>(m_upper.size()) - 1; }
-  int num_lower() const { return static_cast<int>(m_lower.size()) - 1; }
-  // access operator
-  double& operator()(int i, int j);       // write
-  double operator()(int i, int j) const;  // read
-  // we can store an additional diagonal (in m_lower)
-  double& saved_diag(int i);
-  double saved_diag(int i) const;
-  void lu_decompose();
-  std::vector<double> r_solve(const std::vector<double>& b) const;
-  std::vector<double> l_solve(const std::vector<double>& b) const;
-  std::vector<double> lu_solve(const std::vector<double>& b,
-                               bool is_lu_decomposed = false);
-};
+    // Spline interpolation (and extrapolation) of the points
+    stanley_controller::CubicSpline spline(t, y);
 
-}  // namespace stanley_controller
+    std::cout << spline(0.5) << "\n";  // 1.44976
+    std::cout << spline(1.5) << "\n";  // 2.65072
+    std::cout << spline(6.0) << "\n";  // 3
+  }
+  {
+    std::vector<double> X = {0.1, 0.4, 1.2, 1.8, 2.0};  // must be increasing
+    std::vector<double> Y = {0.1, 0.7, 0.6, 1.1, 0.9};
+
+    stanley_controller::CubicSpline spline(X, Y);
+    double t = 1.5;
+    std::cout << spline(t) << "\n";                         // 0.915345
+    std::cout << std::fixed << spline.deriv(1, t) << "\n";  // 1.223601
+  }
+  {
+    std::vector<double> X = {0.1, 0.4};
+    std::vector<double> Y = {0.1, 0.7};
+
+    stanley_controller::CubicSpline spline(X, Y);
+    std::cout << spline(0.25) << "\n";  // 0.4
+  }
+
+  return 0;
+}
